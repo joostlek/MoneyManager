@@ -24,6 +24,24 @@ public class Wallet {
         this.transactions = transactions;
     }
 
+    public Wallet(int walletId, String name, int startBalance, List<Integer> transactions) {
+        this.walletId = walletId;
+        this.name = name;
+        this.balance = startBalance;
+        this.startBalance = startBalance;
+        this.transactions = transactions;
+    }
+
+    public Wallet(Context context, String name, int startBalance, List<Integer> transactions) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+        this.walletId = databaseHandler.getWalletCount() + 1;
+        databaseHandler.close();
+        this.name = name;
+        this.startBalance = startBalance;
+        this.balance = startBalance;
+        this.transactions = transactions;
+    }
+
     public int getWalletId() {
         return walletId;
     }
@@ -48,7 +66,17 @@ public class Wallet {
         this.startBalance = startBalance;
     }
 
-    public int getBalance() {
+    public int getBalance(Context context) {
+        DatabaseHandler databaseHandler = new DatabaseHandler(context);
+        balance = startBalance;
+        for (Integer transactionId : transactions) {
+            Transaction transaction = databaseHandler.getTransaction(transactionId);
+            if (transaction.getSourceWalletId() == this.walletId) {
+                this.balance = this.balance - transaction.getAmount();
+            } else if (transaction.getDestinationWalletId() == this.walletId) {
+                this.balance = this.balance + transaction.getAmount();
+            }
+        }
         return balance;
     }
 
