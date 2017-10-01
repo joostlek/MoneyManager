@@ -43,9 +43,11 @@ public class MainActivity extends AppCompatActivity {
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        Wallet wallet = new Wallet("ss", 900, 900, new ArrayList<Integer>());
+        Wallet wallet = new Wallet(1, "ss", 900, 900, new ArrayList<Integer>());
         Log.v(this.getPackageName(), Integer.toString(wallet.getBalance()));
-
+        DatabaseHandler databaseHandler = new DatabaseHandler(this);
+        databaseHandler.addTransaction(new Transaction(1, "ss", 90, "lmao", new Category(1, "ass"), wallet.getWalletId(), 2));
+        Log.v(this.getPackageName(), Integer.toString(databaseHandler.getTransactionsCount()));
     }
 
 }

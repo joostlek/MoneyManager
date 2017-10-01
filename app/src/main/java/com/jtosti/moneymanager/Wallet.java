@@ -1,5 +1,8 @@
 package com.jtosti.moneymanager;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.util.List;
 
 /**
@@ -7,16 +10,26 @@ import java.util.List;
  */
 
 public class Wallet {
+    private int walletId;
     private String name;
     private int startBalance;
     private int balance;
     private List<Integer> transactions;
 
-    public Wallet(String name, int startBalance, int balance, List<Integer> transactions) {
+    public Wallet(int walletId, String name, int startBalance, int balance, List<Integer> transactions) {
+        this.walletId = walletId;
         this.name = name;
         this.startBalance = startBalance;
         this.balance = balance;
         this.transactions = transactions;
+    }
+
+    public int getWalletId() {
+        return walletId;
+    }
+
+    public void setWalletId(int walletId) {
+        this.walletId = walletId;
     }
 
     public String getName() {
@@ -43,7 +56,7 @@ public class Wallet {
         this.balance = balance;
     }
 
-    public List<Integer> getTransactions() {
+    public List<Integer> getTransactionIds() {
         return transactions;
     }
 
@@ -52,9 +65,9 @@ public class Wallet {
     }
 
     public void addTransaction(Transaction transaction) {
-        if (transaction.getSourceWallet() == this) {
+        if (transaction.getSourceWalletId() == this.walletId) {
             this.balance = this.balance - transaction.getAmount();
-        } else if (transaction.getDestinationWallet() == this) {
+        } else if (transaction.getDestinationWalletId() == this.walletId) {
             this.balance = this.balance + transaction.getAmount();
         }
         transactions.add(transaction.getTransactionId());

@@ -11,17 +11,27 @@ public class Transaction {
     private int amount;
     private String note;
     private Category category;
-    private Wallet sourceWallet;
-    private Wallet destinationWallet;
+    private int sourceWalletId;
+    private int destinationWalletId;
 
-    public Transaction(String name, int amount, String note, Category category, Wallet sourceWallet, Wallet destinationWallet) {
+    public Transaction(String name, int amount, String note, Category category, int sourceWalletId, int destinationWalletId) {
         this.transactionId = 1;
         this.name = name;
         this.amount = amount;
         this.note = note;
         this.category = category;
-        this.sourceWallet = sourceWallet;
-        this.destinationWallet = destinationWallet;
+        this.sourceWalletId = sourceWalletId;
+        this.destinationWalletId = destinationWalletId;
+    }
+
+    public Transaction(int transactionId, String name, int amount, String note, Category category, int sourceWalletId, int destinationWalletId) {
+        this.transactionId = transactionId;
+        this.name = name;
+        this.amount = amount;
+        this.note = note;
+        this.category = category;
+        this.sourceWalletId = sourceWalletId;
+        this.destinationWalletId = destinationWalletId;
     }
 
     public int getTransactionId() {
@@ -60,19 +70,19 @@ public class Transaction {
         this.category = category;
     }
 
-    public Wallet getSourceWallet() {
-        return sourceWallet;
+    public int getSourceWalletId() {
+        return sourceWalletId;
     }
 
-    public void setSourceWallet(Wallet sourceWallet) {
-        this.sourceWallet = sourceWallet;
+    public void setSourceWalletId(int sourceWalletId) {
+        this.sourceWalletId = sourceWalletId;
     }
 
-    public Wallet getDestinationWallet() {
-        return destinationWallet;
+    public int getDestinationWalletId() {
+        return destinationWalletId;
     }
 
-    public void setDestinationWallet(Wallet destinationWallet) {
-        this.destinationWallet = destinationWallet;
+    public void setDestinationWalletId(int destinationWalletId) {
+        this.destinationWalletId = destinationWalletId;
     }
 }
