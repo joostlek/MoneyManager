@@ -23,7 +23,12 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
-public class WalletActivity extends AppCompatActivity {
+import java.text.NumberFormat;
+import java.util.Currency;
+import java.util.List;
+import java.util.Locale;
+
+public class ActivityWallet extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -47,10 +52,10 @@ public class WalletActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    Intent intent = new Intent(WalletActivity.this, MainActivity.class);
+                    Intent intent = new Intent(ActivityWallet.this, ActivityMain.class);
                     startActivity(intent);
                     return true;
-                case R.id.navigation_dashboard:
+                case R.id.navigation_wallet:
                     return true;
                 case R.id.navigation_notifications:
                     return true;
@@ -67,27 +72,33 @@ public class WalletActivity extends AppCompatActivity {
 
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setSelectedItemId(R.id.navigation_wallet);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        DatabaseHandler databaseHandler = new DatabaseHandler(this);
+        List<Wallet> wallets = databaseHandler.getAllWallets();
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), wallets);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(findViewById(R.id.placeSnackBar), "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(), ActivityWalletNew.class);
+                startActivity(intent);
             }
         });
 
@@ -125,6 +136,8 @@ public class WalletActivity extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private static final String ARG_TOTAL = "total";
+        private static final String ARG_CURRENCY = "currency";
 
         public PlaceholderFragment() {
         }
@@ -133,11 +146,13 @@ public class WalletActivity extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
+        public static PlaceholderFragment newInstance(int sectionNumber, double total, String currency) {
             Log.v("test",  Integer.toString(sectionNumber));
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putDouble(ARG_TOTAL, total);
+            args.putString(ARG_CURRENCY, currency);
             fragment.setArguments(args);
             return fragment;
         }
@@ -146,8 +161,19 @@ public class WalletActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_wallet, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            TextView total = (TextView) rootView.findViewById(R.id.total);
+            NumberFormat formatter = NumberFormat.getCurrencyInstance();
+            try {
+                if (getArguments().getString(ARG_CURRENCY).equals("USD")) {
+                    formatter.setCurrency(Currency.getInstance(Locale.US));
+                } else if (getArguments().getString(ARG_CURRENCY).equals("EUR")) {
+                    formatter.setCurrency(Currency.getInstance(Locale.GERMANY));
+                }
+            } catch (NullPointerException e) {
+                Log.e(getActivity().getPackageName(), e.toString());
+            }
+            String moneyString = formatter.format(getArguments().getDouble(ARG_TOTAL));
+            total.setText(String.format(getString(R.string.total), moneyString));
             return rootView;
         }
     }
@@ -157,33 +183,31 @@ public class WalletActivity extends AppCompatActivity {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
+        private List<Wallet> wallets;
+        public SectionsPagerAdapter(FragmentManager fm, List<Wallet> wallets) {
             super(fm);
+            this.wallets = wallets;
         }
+
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return PlaceholderFragment.newInstance(position + 1, wallets.get(position).getBalance(getApplicationContext()),
+                    wallets.get(position).getCurrency());
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return wallets.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
+            if (!wallets.isEmpty()) {
+                return wallets.get(position).getName();
             }
             return null;
         }

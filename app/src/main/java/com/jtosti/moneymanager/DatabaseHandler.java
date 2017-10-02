@@ -2,14 +2,15 @@ package com.jtosti.moneymanager;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +35,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TRANSACTIONS_TABLE = "CREATE TABLE transactions(transactionId INTEGER PRIMARY KEY,name TEXT,amount INTEGER,note TEXT,date INT,categoryId INT,sourceWalletId INT, destinationWalletId INT)";
-        String CREATE_WALLETS_TABLE = "CREATE TABLE wallets(walletId INTEGER PRIMARY KEY,name TEXT,startBalance INTEGER,transactions TEXT)";
+        String CREATE_TRANSACTIONS_TABLE = "CREATE TABLE transactions(transactionId INTEGER PRIMARY KEY,name TEXT,amount REAL,note TEXT,date INT,categoryId INT,sourceWalletId INT, destinationWalletId INT)";
+        String CREATE_WALLETS_TABLE = "CREATE TABLE wallets(walletId INTEGER PRIMARY KEY,name TEXT,startBalance REAL,currency TEXT,transactions TEXT)";
         db.execSQL(CREATE_TRANSACTIONS_TABLE);
         db.execSQL(CREATE_WALLETS_TABLE);
     }
@@ -75,6 +76,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put("walletId", wallet.getWalletId());
         values.put("name", wallet.getName());
         values.put("startBalance", wallet.getStartBalance());
+        values.put("currency", wallet.getCurrency());
         values.put("transactions", gson.toJson(wallet.getTransactionIds()));
         db.insert("wallets", (String)null, values);
         db.close();
@@ -86,19 +88,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if(cursor != null) {
             cursor.moveToFirst();
         }
-        Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Integer.parseInt(cursor.getString(2)), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
+        Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
         cursor.close();
         return transaction;
     }
 
     Wallet getWallet(int walletId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query("wallets", new String[]{"walletId", "name", "startBalance", "transactions"}, "walletId=?", new String[]{String.valueOf(walletId)}, (String)null, (String)null, (String)null, (String)null);
+        Cursor cursor = db.query("wallets", new String[]{"walletId", "name", "startBalance", "currency", "transactions"}, "walletId=?", new String[]{String.valueOf(walletId)}, (String)null, (String)null, (String)null, (String)null);
         if(cursor != null) {
             cursor.moveToFirst();
         }
         Gson gson = new Gson();
-        Wallet wallet = new Wallet(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Integer.parseInt(cursor.getString(2)), (ArrayList<Integer>) gson.fromJson(cursor.getString(3), new TypeToken<ArrayList<Integer>>(){}.getType()));
+        Wallet wallet = new Wallet(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), (ArrayList<Integer>) gson.fromJson(cursor.getString(4), new TypeToken<ArrayList<Integer>>(){}.getType()));
         cursor.close();
         return wallet;
     }
@@ -110,11 +112,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, (String[])null);
         if(cursor.moveToFirst()) {
             do {
-                Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Integer.parseInt(cursor.getString(2)), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
+                Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
                 transactionList.add(transaction);
             } while(cursor.moveToNext());
         }
-
+        cursor.close();
         return transactionList;
     }
 
@@ -126,7 +128,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if(cursor.moveToFirst()) {
             do {
                 Gson gson = new Gson();
-                Wallet wallet = new Wallet(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Integer.parseInt(cursor.getString(2)), (ArrayList<Integer>) gson.fromJson(cursor.getString(3), new TypeToken<ArrayList<Integer>>(){}.getType()));
+                Wallet wallet = new Wallet(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), (ArrayList<Integer>) gson.fromJson(cursor.getString(4), new TypeToken<ArrayList<Integer>>(){}.getType()));
                 walletList.add(wallet);
             } while(cursor.moveToNext());
         }
@@ -155,6 +157,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put("walletId", wallet.getWalletId());
         values.put("name", wallet.getName());
         values.put("startBalance", wallet.getStartBalance());
+        values.put("currency", wallet.getCurrency());
         values.put("transactions", gson.toJson(wallet.getTransactionIds()));
         return db.update("wallets", values, "walletId = ?", new String[]{String.valueOf(wallet.getWalletId())});
     }

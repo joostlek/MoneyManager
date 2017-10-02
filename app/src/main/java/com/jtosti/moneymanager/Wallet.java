@@ -1,7 +1,6 @@
 package com.jtosti.moneymanager;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import java.util.List;
 
@@ -12,33 +11,37 @@ import java.util.List;
 public class Wallet {
     private int walletId;
     private String name;
-    private int startBalance;
-    private int balance;
+    private double startBalance;
+    private double balance;
+    private String currency;
     private List<Integer> transactions;
 
-    public Wallet(int walletId, String name, int startBalance, int balance, List<Integer> transactions) {
+    public Wallet(int walletId, String name, double startBalance, double balance, String currency, List<Integer> transactions) {
         this.walletId = walletId;
         this.name = name;
         this.startBalance = startBalance;
         this.balance = balance;
+        this.currency = currency;
         this.transactions = transactions;
     }
 
-    public Wallet(int walletId, String name, int startBalance, List<Integer> transactions) {
+    public Wallet(int walletId, String name, double startBalance, String currency, List<Integer> transactions) {
         this.walletId = walletId;
         this.name = name;
         this.balance = startBalance;
+        this.currency = currency;
         this.startBalance = startBalance;
         this.transactions = transactions;
     }
 
-    public Wallet(Context context, String name, int startBalance, List<Integer> transactions) {
+    public Wallet(Context context, String name, double startBalance, String currency, List<Integer> transactions) {
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
         this.walletId = databaseHandler.getWalletCount() + 1;
         databaseHandler.close();
         this.name = name;
         this.startBalance = startBalance;
         this.balance = startBalance;
+        this.currency = currency;
         this.transactions = transactions;
     }
 
@@ -58,15 +61,23 @@ public class Wallet {
         this.name = name;
     }
 
-    public int getStartBalance() {
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public double getStartBalance() {
         return startBalance;
     }
 
-    public void setStartBalance(int startBalance) {
+    public void setStartBalance(double startBalance) {
         this.startBalance = startBalance;
     }
 
-    public int getBalance(Context context) {
+    public double getBalance(Context context) {
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
         balance = startBalance;
         for (Integer transactionId : transactions) {
@@ -80,7 +91,7 @@ public class Wallet {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void setBalance(double balance) {
         this.balance = balance;
     }
 

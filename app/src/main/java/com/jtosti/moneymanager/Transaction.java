@@ -10,14 +10,14 @@ import android.content.Context;
 public class Transaction {
     private int transactionId;
     private String name;
-    private int amount;
+    private double amount;
     private String note;
     private int date;
     private int categoryId;
     private int sourceWalletId;
     private int destinationWalletId;
 
-    public Transaction(Context context, String name, int amount, String note, int date, int categoryId, int sourceWalletId, int destinationWalletId) {
+    public Transaction(Context context, String name, double amount, String note, int date, int categoryId, int sourceWalletId, int destinationWalletId) {
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
         this.transactionId = databaseHandler.getTransactionsCount() + 1;
         databaseHandler.close();
@@ -30,7 +30,7 @@ public class Transaction {
         this.destinationWalletId = destinationWalletId;
     }
 
-    public Transaction(int transactionId, String name, int amount, String note, int date, int categoryId, int sourceWalletId, int destinationWalletId) {
+    public Transaction(int transactionId, String name, double amount, String note, int date, int categoryId, int sourceWalletId, int destinationWalletId) {
         this.transactionId = transactionId;
         this.name = name;
         this.amount = amount;
@@ -53,11 +53,11 @@ public class Transaction {
         this.name = name;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

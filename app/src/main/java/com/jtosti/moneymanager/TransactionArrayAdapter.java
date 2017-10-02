@@ -33,9 +33,9 @@ public class TransactionArrayAdapter extends RecyclerView.Adapter<TransactionArr
         Transaction item = items.get(position);
         holder.name.setText(item.getName());
         if (item.getSourceWalletId() == walletId) {
-            holder.amount.setText("-" + Integer.toString(item.getAmount()));
+            holder.amount.setText("-" + Double.toString(item.getAmount()));
         } else if (item.getDestinationWalletId() == walletId) {
-            holder.amount.setText(Integer.toString(item.getAmount()));
+            holder.amount.setText(Double.toString(item.getAmount()));
         }
     }
 
