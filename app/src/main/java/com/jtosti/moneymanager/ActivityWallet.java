@@ -7,6 +7,8 @@ import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -80,6 +82,7 @@ public class ActivityWallet extends AppCompatActivity {
 
         DatabaseHandler databaseHandler = new DatabaseHandler(this);
         List<Wallet> wallets = databaseHandler.getAllWallets();
+        wallets.remove(0);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), wallets);
@@ -93,14 +96,14 @@ public class ActivityWallet extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), ActivityWalletNew.class);
-                startActivity(intent);
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(getApplicationContext(), ActivityWalletNew.class);
+//                startActivity(intent);
+//            }
+//        });
 
     }
 
@@ -138,6 +141,7 @@ public class ActivityWallet extends AppCompatActivity {
         private static final String ARG_SECTION_NUMBER = "section_number";
         private static final String ARG_TOTAL = "total";
         private static final String ARG_CURRENCY = "currency";
+        private static final String ARG_WALLETID = "walletid";
 
         public PlaceholderFragment() {
         }
@@ -146,13 +150,14 @@ public class ActivityWallet extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber, double total, String currency) {
+        public static PlaceholderFragment newInstance(int sectionNumber, double total, String currency, int walletId) {
             Log.v("test",  Integer.toString(sectionNumber));
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             args.putDouble(ARG_TOTAL, total);
             args.putString(ARG_CURRENCY, currency);
+            args.putInt(ARG_WALLETID, walletId);
             fragment.setArguments(args);
             return fragment;
         }
@@ -172,6 +177,12 @@ public class ActivityWallet extends AppCompatActivity {
             } catch (NullPointerException e) {
                 Log.e(getActivity().getPackageName(), e.toString());
             }
+            DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+            List<Transaction> transactions = databaseHandler.getTransactions(getArguments().getInt(ARG_WALLETID));
+            RecyclerView recyclerView = rootView.findViewById(R.id.transactions);
+            recyclerView.setAdapter(new TransactionArrayAdapter(transactions, getArguments().getInt(ARG_WALLETID),
+                    getArguments().getString(ARG_CURRENCY)));
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             String moneyString = formatter.format(getArguments().getDouble(ARG_TOTAL));
             total.setText(String.format(getString(R.string.total), moneyString));
             return rootView;
@@ -195,7 +206,7 @@ public class ActivityWallet extends AppCompatActivity {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             return PlaceholderFragment.newInstance(position + 1, wallets.get(position).getBalance(getApplicationContext()),
-                    wallets.get(position).getCurrency());
+                    wallets.get(position).getCurrency(), wallets.get(position).getWalletId());
         }
 
         @Override

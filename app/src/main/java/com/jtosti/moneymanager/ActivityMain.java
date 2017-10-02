@@ -52,16 +52,9 @@ public class ActivityMain extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         DatabaseHandler databaseHandler = new DatabaseHandler(this);
-        Gson gson = new Gson();
-        databaseHandler.addWallet(new Wallet(1, "Debts", 900, 900, "EUR", new ArrayList<Integer>()));
-        databaseHandler.addWallet(new Wallet(2, "", 900, 900, "EUR", new ArrayList<Integer>()));
-        databaseHandler.addTransaction(new Transaction(this, "ss", 90, "lmao", 1, 1, 1, 2));
-        mTextMessage.setText(Double.toString(databaseHandler.getWallet(1).getBalance(this)));
-
-        List<Transaction> transactions = databaseHandler.getAllTransactions();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        recyclerView.setAdapter(new TransactionArrayAdapter(transactions, 1));
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        List<Wallet> wallets = databaseHandler.getAllWallets();
+        if (wallets.size() == 0) {
+            databaseHandler.addWallet(new Wallet(0, "General", 0, "EUR", new ArrayList<Integer>()));
+        }
     }
-
 }

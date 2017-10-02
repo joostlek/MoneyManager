@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by joost on 1-10-17.
@@ -192,4 +193,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return count;
     }
+
+    public List<Transaction> getTransactions(int walletId) {
+        ArrayList transactionList = new ArrayList();
+        String selectQuery = String.format(Locale.ENGLISH, "SELECT  * FROM transactions WHERE sourceWalletId = %d OR destinationWalletId = %d", walletId, walletId);
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, (String[])null);
+        if(cursor.moveToFirst()) {
+            do {
+                Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
+                transactionList.add(transaction);
+            } while(cursor.moveToNext());
+        }
+        cursor.close();
+        return transactionList;
+        }
 }

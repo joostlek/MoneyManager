@@ -41,7 +41,7 @@ public class ActivityWalletNew extends AppCompatActivity {
                     return;
                 }
                 DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext());
-                databaseHandler.addWallet(new Wallet(getApplicationContext(), name.getText().toString(), Double.parseDouble(startBalance.getText().toString()), spinner.toString(), new ArrayList<Integer>()));
+                databaseHandler.addWallet(new Wallet(getApplicationContext(), name.getText().toString(), Double.parseDouble(startBalance.getText().toString()), spinner.getSelectedItem().toString(), new ArrayList<Integer>()));
                 Intent intent = new Intent(getApplicationContext(), ActivityWallet.class);
                 startActivity(intent);
             }

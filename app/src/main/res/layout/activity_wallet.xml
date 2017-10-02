@@ -51,13 +51,47 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab"
+            <com.github.clans.fab.FloatingActionMenu
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:layout_margin="@dimen/fab_margin"
-                app:srcCompat="@drawable/ic_add_black_24dp" />
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="8dp"
+                app:menu_colorNormal="@color/secondaryColor"
+                app:menu_colorPressed="@color/secondaryDarkColor"
+                app:menu_colorRipple="@color/secondaryLightColor"
+                app:srcCompat="@drawable/ic_add_black_24dp">
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fab_wallet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_wallet_black_24dp"
+                    app:fab_colorNormal="@color/secondaryColor"
+                    app:fab_colorPressed="@color/secondaryDarkColor"
+                    app:fab_colorRipple="@color/secondaryLightColor"
+                    app:fab_label="Add Wallet" />
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fab_transaction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_compare_arrows_black_24dp"
+                    app:fab_colorNormal="@color/secondaryColor"
+                    app:fab_colorPressed="@color/secondaryDarkColor"
+                    app:fab_colorRipple="@color/secondaryLightColor"
+                    app:fab_label="Add Transaction" />
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fab_smth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_wallet_black_24dp"
+                    app:fab_colorNormal="@color/secondaryColor"
+                    app:fab_colorPressed="@color/secondaryDarkColor"
+                    app:fab_colorRipple="@color/secondaryLightColor"
+                    app:fab_label="Add Wallet" />
+            </com.github.clans.fab.FloatingActionMenu>
 
         </android.support.design.widget.CoordinatorLayout>
 
