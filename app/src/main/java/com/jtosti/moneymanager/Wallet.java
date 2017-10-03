@@ -36,7 +36,7 @@ public class Wallet {
 
     public Wallet(Context context, String name, double startBalance, String currency, List<Integer> transactions) {
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
-        this.walletId = databaseHandler.getWalletCount() + 1;
+        this.walletId = databaseHandler.getWalletCount();
         databaseHandler.close();
         this.name = name;
         this.startBalance = startBalance;

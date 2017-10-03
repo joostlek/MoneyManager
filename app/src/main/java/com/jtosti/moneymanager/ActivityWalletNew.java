@@ -21,6 +21,7 @@ public class ActivityWalletNew extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wallet_new);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final EditText name = findViewById(R.id.name);
         final EditText startBalance = findViewById(R.id.start_balance);

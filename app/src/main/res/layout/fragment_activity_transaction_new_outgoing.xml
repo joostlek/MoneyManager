@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    android:fadeScrollbars="true"
+    android:fitsSystemWindows="false"
     android:orientation="vertical"
+    android:scrollbars="vertical"
     tools:context="com.jtosti.moneymanager.ActivityWalletNew">
 
     <LinearLayout
@@ -24,34 +26,49 @@
             android:inputType="textPersonName"
             android:singleLine="true" />
 
+        <EditText
+            android:id="@+id/amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:hint="@string/amount"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:ems="10"
+            android:hint="@string/note"
+            android:inputType="textPersonName" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/start_balance"
+            <Spinner
+                android:id="@+id/select_wallet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_weight="1"
-                android:ems="10"
-                android:hint="@string/start_balance"
-                android:inputType="numberDecimal" />
+                android:layout_weight="1" />
 
             <Spinner
-                android:id="@+id/spinner"
+                android:id="@+id/select_category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:layout_weight="2"
-                android:entries="@array/currencies" />
+                android:layout_weight="1" />
+
         </LinearLayout>
 
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/fab_next"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"

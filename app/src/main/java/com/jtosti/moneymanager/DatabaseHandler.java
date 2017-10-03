@@ -38,13 +38,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TRANSACTIONS_TABLE = "CREATE TABLE transactions(transactionId INTEGER PRIMARY KEY,name TEXT,amount REAL,note TEXT,date INT,categoryId INT,sourceWalletId INT, destinationWalletId INT)";
         String CREATE_WALLETS_TABLE = "CREATE TABLE wallets(walletId INTEGER PRIMARY KEY,name TEXT,startBalance REAL,currency TEXT,transactions TEXT)";
+        String CREATE_CATEGORIES_TABLE = "CREATE TABLE categories(categoryId INTEGER PRIMARY KEY,name TEXT)";
         db.execSQL(CREATE_TRANSACTIONS_TABLE);
         db.execSQL(CREATE_WALLETS_TABLE);
+        db.execSQL(CREATE_CATEGORIES_TABLE);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS transactions");
         db.execSQL("DROP TABLE IF EXISTS wallets");
+        db.execSQL("DROP TABLE IF EXISTS categories");
         this.onCreate(db);
     }
 
@@ -83,6 +86,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    void addCategory(Category category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        Gson gson = new Gson();
+        values.put("categoryId", category.getCategoryId());
+        values.put("name", category.getName());
+        db.insert("categories", (String)null, values);
+        db.close();
+    }
+
     Transaction getTransaction(int transactionId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query("transactions", new String[]{"transactionId", "name", "amount", "note", "date", "categoryId", "sourceWalletId", "destinationWalletId"}, "transactionId=?", new String[]{String.valueOf(transactionId)}, (String)null, (String)null, (String)null, (String)null);
@@ -101,9 +114,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.moveToFirst();
         }
         Gson gson = new Gson();
+        Log.e("tessst", gson.toJson(getAllWallets()));
         Wallet wallet = new Wallet(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), (ArrayList<Integer>) gson.fromJson(cursor.getString(4), new TypeToken<ArrayList<Integer>>(){}.getType()));
         cursor.close();
         return wallet;
+    }
+
+    Category getCategory(int categoryId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("categories", new String[]{"categoryId", "name"}, "categoryId=?", new String[]{String.valueOf(categoryId)}, (String)null, (String)null, (String)null, (String)null);
+        if(cursor != null) {
+            cursor.moveToFirst();
+        }
+        Category category = new Category(cursor.getInt(0), cursor.getString(1));
+        cursor.close();
+        return category;
     }
 
     public List<Transaction> getAllTransactions() {
@@ -137,6 +162,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return walletList;
     }
 
+    public List<Category> getAllCategories() {
+        ArrayList categoryList = new ArrayList();
+        String selectQuery = "SELECT  * FROM categories";
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, (String[])null);
+        if(cursor.moveToFirst()) {
+            do {
+                Category category = new Category(cursor.getInt(0), cursor.getString(1));
+                categoryList.add(category);
+            } while(cursor.moveToNext());
+        }
+        cursor.close();
+        return categoryList;
+    }
+
+    /**
+     * Added: A0.02
+     * Last Updated: A0.02
+     * @param transaction The transaction that needs to be updated
+     * @return ?
+     */
+
     public int updateTransaction(Transaction transaction) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -151,6 +198,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return db.update("transactions", values, "transactionId = ?", new String[]{String.valueOf(transaction.getTransactionId())});
     }
 
+    /**
+     * Added: A0.04
+     * Last Updated: A0.04
+     * @param wallet The wallet that needs to be updated
+     * @return ? need to find out.
+     */
+
     public int updateWallet(Wallet wallet) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -163,6 +217,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return db.update("wallets", values, "walletId = ?", new String[]{String.valueOf(wallet.getWalletId())});
     }
 
+    /**
+     * Added: A0.06
+     * Last Updated: A0.06
+     * @param category The category that needs to be updated
+     * @return ?
+     */
+
+    public int updateCategory(Category category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("categoryId", category.getCategoryId());
+        values.put("name", category.getName());
+        return db.update("categories", values, "categoryId = ?", new String[]{String.valueOf(category.getCategoryId())});
+    }
+
+    /**
+     * Added: A0.02
+     * Last Updated: A0.02
+     * @param transaction The transaction that needs to be deleted
+     */
+
 
     public void deleteTransaction(Transaction transaction) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -170,11 +245,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    /**
+     * Added: A0.03
+     * Last Updated: A0.03
+     * @param wallet The wallet that needs to be deleted
+     */
+
     public void deleteWallet(Wallet wallet) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("wallets", "walletId = ?", new String[]{String.valueOf(wallet.getWalletId())});
         db.close();
     }
+
+    /**
+     * Added: A0.06
+     * Last Updated: A0.06
+     * @param category The category that needs to be deleted
+     */
+
+    public void deleteCategory(Category category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("categories", "categoryId = ?", new String[]{String.valueOf(category.getCategoryId())});
+        db.close();
+    }
+
+    /**
+     * Added: A0.02
+     * Last Updated: A0.02
+     * @return The amount of transactions in the database
+     */
 
     public int getTransactionsCount() {
         String countQuery = "SELECT  * FROM transactions";
@@ -185,6 +284,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return count;
     }
 
+    /**
+     * Added: A0.03
+     * Last Updated: A0.03
+     * @return The amount of wallets in the database
+     */
+
     public int getWalletCount() {
         String countQuery = "SELECT  * FROM wallets";
         SQLiteDatabase db = this.getReadableDatabase();
@@ -193,6 +298,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return count;
     }
+
+    /**
+     * Added: A0.06
+     * Last Updated: A0.06
+     * @return The amount of categories in the database
+     */
+
+
+    public int getCategoryCount() {
+        String countQuery = "SELECT  * FROM categories";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, (String[])null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
+
+    /**
+     * AddedL A0.05
+     * Last Updated: A0.05
+     * @param walletId The ID of the wallet you want the transactions of.
+     * @return A List of all transactions that had a link with walletId
+     */
 
     public List<Transaction> getTransactions(int walletId) {
         ArrayList transactionList = new ArrayList();

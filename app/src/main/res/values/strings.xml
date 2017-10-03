@@ -11,10 +11,24 @@
     <string name="insert_numbers">Please enter a valid amount.</string>
     <string name="name">Name</string>
 
-    <string name="title_activity_wallet">WalletActivity</string>
+    <string name="title_activity_wallet">Wallets</string>
+    <string name="title_activity_recurring_transaction_new">Add Recurring Transaction</string>
+    <string name="title_activity_wallet_new">Add Wallet</string>
     <string name="total" formatted="false">Total: %s</string>
     <string-array name="currencies">
         <item>EUR</item>
         <item>USD</item>
     </string-array>
+    <string name="add_wallet">Add Wallet</string>
+    <string name="add_transaction">Add Transaction</string>
+    <string name="add_recurring_transaction">Add Recurring Transaction</string>
+
+    <string name="title_activity_transaction_new">Add Transaction</string>
+    <string name="amount">Amount</string>
+    <string name="category">Category</string>
+    <string name="note">Note</string>
+    <string name="money_in">Incoming</string>
+    <string name="money_out">Outgoing</string>
+    <string name="money_trans">Transfer</string>
+
 </resources>

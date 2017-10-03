@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -55,6 +56,7 @@ public class ActivityMain extends AppCompatActivity {
         List<Wallet> wallets = databaseHandler.getAllWallets();
         if (wallets.size() == 0) {
             databaseHandler.addWallet(new Wallet(0, "General", 0, "EUR", new ArrayList<Integer>()));
+            databaseHandler.addCategory(new Category(0, "Snackbar"));
         }
     }
 }

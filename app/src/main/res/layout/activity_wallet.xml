@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -52,6 +53,7 @@
             android:layout_weight="1">
 
             <com.github.clans.fab.FloatingActionMenu
+                android:id="@+id/fab_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
@@ -60,7 +62,8 @@
                 app:menu_colorNormal="@color/secondaryColor"
                 app:menu_colorPressed="@color/secondaryDarkColor"
                 app:menu_colorRipple="@color/secondaryLightColor"
-                app:srcCompat="@drawable/ic_add_black_24dp">
+                app:menu_icon="@drawable/ic_add_black_24dp"
+                fab:icon="@drawable/ic_add_black_24dp">
 
                 <com.github.clans.fab.FloatingActionButton
                     android:id="@+id/fab_wallet"
@@ -70,7 +73,17 @@
                     app:fab_colorNormal="@color/secondaryColor"
                     app:fab_colorPressed="@color/secondaryDarkColor"
                     app:fab_colorRipple="@color/secondaryLightColor"
-                    app:fab_label="Add Wallet" />
+                    app:fab_label="@string/add_wallet" />
+
+                <com.github.clans.fab.FloatingActionButton
+                    android:id="@+id/fab_recurring"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_autorenew_black_24dp"
+                    app:fab_colorNormal="@color/secondaryColor"
+                    app:fab_colorPressed="@color/secondaryDarkColor"
+                    app:fab_colorRipple="@color/secondaryLightColor"
+                    app:fab_label="@string/add_recurring_transaction" />
 
                 <com.github.clans.fab.FloatingActionButton
                     android:id="@+id/fab_transaction"
@@ -80,17 +93,7 @@
                     app:fab_colorNormal="@color/secondaryColor"
                     app:fab_colorPressed="@color/secondaryDarkColor"
                     app:fab_colorRipple="@color/secondaryLightColor"
-                    app:fab_label="Add Transaction" />
-
-                <com.github.clans.fab.FloatingActionButton
-                    android:id="@+id/fab_smth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_wallet_black_24dp"
-                    app:fab_colorNormal="@color/secondaryColor"
-                    app:fab_colorPressed="@color/secondaryDarkColor"
-                    app:fab_colorRipple="@color/secondaryLightColor"
-                    app:fab_label="Add Wallet" />
+                    app:fab_label="@string/add_transaction" />
             </com.github.clans.fab.FloatingActionMenu>
 
         </android.support.design.widget.CoordinatorLayout>

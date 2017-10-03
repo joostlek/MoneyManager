@@ -77,7 +77,7 @@ public class ActivityWallet extends AppCompatActivity {
         navigation.setSelectedItemId(R.id.navigation_wallet);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DatabaseHandler databaseHandler = new DatabaseHandler(this);
@@ -88,22 +88,31 @@ public class ActivityWallet extends AppCompatActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), wallets);
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
         tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(getApplicationContext(), ActivityWalletNew.class);
-//                startActivity(intent);
-//            }
-//        });
+        com.github.clans.fab.FloatingActionButton fab_wallet = findViewById(R.id.fab_wallet);
+        fab_wallet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ActivityWalletNew.class);
+                startActivity(intent);
+            }
+        });
+
+        com.github.clans.fab.FloatingActionButton fab_transaction = findViewById(R.id.fab_transaction);
+        fab_transaction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), ActivityTransactionNew.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -204,7 +213,7 @@ public class ActivityWallet extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
+            // Return a Fragment_incoming (defined as a static inner class below).
             return PlaceholderFragment.newInstance(position + 1, wallets.get(position).getBalance(getApplicationContext()),
                     wallets.get(position).getCurrency(), wallets.get(position).getWalletId());
         }
