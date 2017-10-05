@@ -12,30 +12,30 @@ public class Transaction {
     private String name;
     private double amount;
     private String note;
-    private int date;
+    private long date;
     private int categoryId;
     private int sourceWalletId;
     private int destinationWalletId;
 
-    public Transaction(Context context, String name, double amount, String note, int date, int categoryId, int sourceWalletId, int destinationWalletId) {
+    public Transaction(Context context, String name, double amount, String note, long date, int categoryId, int sourceWalletId, int destinationWalletId) {
         DatabaseHandler databaseHandler = new DatabaseHandler(context);
         this.transactionId = databaseHandler.getTransactionsCount() + 1;
         databaseHandler.close();
         this.name = name;
         this.amount = amount;
         this.note = note;
-        this.date = date;
+        this.date = (date / 1000);
         this.categoryId = categoryId;
         this.sourceWalletId = sourceWalletId;
         this.destinationWalletId = destinationWalletId;
     }
 
-    public Transaction(int transactionId, String name, double amount, String note, int date, int categoryId, int sourceWalletId, int destinationWalletId) {
+    public Transaction(int transactionId, String name, double amount, String note, long date, int categoryId, int sourceWalletId, int destinationWalletId) {
         this.transactionId = transactionId;
         this.name = name;
         this.amount = amount;
         this.note = note;
-        this.date = date;
+        this.date = (date / 1000);
         this.categoryId = categoryId;
         this.sourceWalletId = sourceWalletId;
         this.destinationWalletId = destinationWalletId;
@@ -69,12 +69,12 @@ public class Transaction {
         this.note = note;
     }
 
-    public int getDate() {
-        return date;
+    public long getDate() {
+        return (date * 1000);
     }
 
-    public void setDate(int date) {
-        this.date = date;
+    public void setDate(long date) {
+        this.date = (date / 1000);
     }
 
     public int getCategoryId() {

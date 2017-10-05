@@ -7,6 +7,8 @@ import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -25,8 +27,16 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.github.clans.fab.FloatingActionMenu;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -177,23 +187,74 @@ public class ActivityWallet extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_wallet, container, false);
             TextView total = (TextView) rootView.findViewById(R.id.total);
             NumberFormat formatter = NumberFormat.getCurrencyInstance();
-            try {
-                if (getArguments().getString(ARG_CURRENCY).equals("USD")) {
-                    formatter.setCurrency(Currency.getInstance(Locale.US));
-                } else if (getArguments().getString(ARG_CURRENCY).equals("EUR")) {
-                    formatter.setCurrency(Currency.getInstance(Locale.GERMANY));
-                }
-            } catch (NullPointerException e) {
-                Log.e(getActivity().getPackageName(), e.toString());
+
+            final FloatingActionMenu menu = getActivity().findViewById(R.id.fab_menu);
+            if (getArguments().getString(ARG_CURRENCY).equals("USD")) {
+                formatter.setCurrency(Currency.getInstance(Locale.US));
+            } else if (getArguments().getString(ARG_CURRENCY).equals("EUR")) {
+                formatter.setCurrency(Currency.getInstance(Locale.GERMANY));
             }
-            DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
-            List<Transaction> transactions = databaseHandler.getTransactions(getArguments().getInt(ARG_WALLETID));
-            RecyclerView recyclerView = rootView.findViewById(R.id.transactions);
-            recyclerView.setAdapter(new TransactionArrayAdapter(transactions, getArguments().getInt(ARG_WALLETID),
-                    getArguments().getString(ARG_CURRENCY)));
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             String moneyString = formatter.format(getArguments().getDouble(ARG_TOTAL));
             total.setText(String.format(getString(R.string.total), moneyString));
+
+
+
+
+            DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+            List<Transaction> transactions = databaseHandler.getTransactions(getArguments().getInt(ARG_WALLETID));
+            List<String> strings = new ArrayList<>();
+            for (Transaction transaction: transactions) {
+                strings.add(transaction.getName());
+            }
+            RecyclerView recyclerView = rootView.findViewById(R.id.transactions);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+            Bundle args = new Bundle(getArguments());
+
+            SimpleAdapter adapter = new SimpleAdapter(getContext(), transactions, args);
+            List<SimpleSectionedRecyclerViewAdapter.Section> sections = new ArrayList<>();
+            long lastDay = 0;
+            Log.e("day", Integer.toString(new DateTime().getDayOfMonth()));
+            for (Transaction transaction: transactions) {
+                if (lastDay != new DateTime(transaction.getDate()).getDayOfMonth()) {
+                    Log.e("days", new DateTime(transaction.getDate()).toDate().toString());
+                    lastDay = new DateTime(transaction.getDate()).getDayOfMonth();
+                    if (new DateTime(transaction.getDate()).getDayOfYear() == new DateTime().getDayOfYear()) {
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(transactions.indexOf(transaction), getResources().getString(R.string.today)));
+                    } else if (new DateTime(transaction.getDate()).getYear() == new DateTime().getYear()) {
+                        DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMMM");
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(transactions.indexOf(transaction), fmt.print(new DateTime(transaction.getDate()))));
+                    } else {
+                        DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMMM yyyy");
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(transactions.indexOf(transaction), fmt.print(new DateTime(transaction.getDate()))));
+                    }
+
+                }
+            }
+            SimpleSectionedRecyclerViewAdapter.Section[] dummy = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
+            SimpleSectionedRecyclerViewAdapter sectionedAdapter = new SimpleSectionedRecyclerViewAdapter(getContext(), R.layout.date, R.id.date, adapter);
+            sectionedAdapter.setSections(sections.toArray(dummy));
+            recyclerView.setAdapter(sectionedAdapter);
+
+            final CardView total_card = rootView.findViewById(R.id.total_card);
+            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                }
+
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    if (dy > 0) {
+                        menu.setVisibility(View.INVISIBLE);
+                        total_card.setVisibility(View.INVISIBLE);
+                    } else if (dy < 0) {
+                        menu.setVisibility(View.VISIBLE);
+                        total_card.setVisibility(View.VISIBLE);
+                    }
+                    super.onScrolled(recyclerView, dx, dy);
+                }
+            });
             return rootView;
         }
     }

@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ActivityTransactionNew extends AppCompatActivity {
@@ -59,6 +61,19 @@ public class ActivityTransactionNew extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        int mode = getIntent().getExtras().getInt("mode");
+        switch (mode) {
+            case 1:
+                mViewPager.setCurrentItem(0);
+                break;
+            case 2:
+                mViewPager.setCurrentItem(1);
+                break;
+            case 3:
+                mViewPager.setCurrentItem(2);
+                break;
+        }
 
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -115,10 +130,59 @@ public class ActivityTransactionNew extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_activity_transaction_new_outgoing, container, false);
-//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-//            textView.setText("incoming");
+            View rootView = inflater.inflate(R.layout.fragment_activity_transaction_new_incoming, container, false);
+            addWallets(rootView);
+            addCategories(rootView);
+            final EditText eName = rootView.findViewById(R.id.name);
+            final EditText eAmount = rootView.findViewById(R.id.amount);
+            final EditText eNote = rootView.findViewById(R.id.note);
+            final Spinner eSelectWallet = rootView.findViewById(R.id.select_wallet);
+            final Spinner eSelectCategory = rootView.findViewById(R.id.select_category);
+
+            FloatingActionButton fab = rootView.findViewById(R.id.fab_next);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String name = eName.getText().toString();
+                    int amount = Integer.parseInt(eAmount.getText().toString());
+                    String note = eNote.getText().toString();
+                    int destinationId = eSelectWallet.getSelectedItemPosition();
+                    int categoryId = eSelectCategory.getSelectedItemPosition();
+                    DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+                    long date = (new Date().getTime());
+                    databaseHandler.addTransaction(new Transaction(getContext(), name, amount, note, date, categoryId, 0, destinationId));
+                    databaseHandler.close();
+                    Intent intent = new Intent(getContext(), ActivityWallet.class);
+                    startActivity(intent);
+                }
+            });
             return rootView;
+        }
+
+        public void addWallets(View view) {
+            Spinner spinner = view.findViewById(R.id.select_wallet);
+            DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+            List<Wallet> wallets = databaseHandler.getAllWallets();
+            List<String> list = new ArrayList<>();
+            for (Wallet wallet: wallets) {
+                list.add(wallet.getName());
+            }
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(dataAdapter);
+        }
+
+        public void addCategories(View view) {
+            Spinner spinner = view.findViewById(R.id.select_category);
+            DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+            List<Category> categories = databaseHandler.getAllCategories();
+            List<String> list = new ArrayList<>();
+            for (Category category: categories) {
+                list.add(category.getName());
+            }
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(dataAdapter);
         }
     }
 
@@ -142,10 +206,64 @@ public class ActivityTransactionNew extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_activity_transaction_new_outgoing, container, false);
-//            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-//            textView.setText("transfer");
+            View rootView = inflater.inflate(R.layout.fragment_activity_transaction_new_transfer, container, false);
+            addWallets(rootView);
+            addCategories(rootView);
+            final EditText eName = rootView.findViewById(R.id.name);
+            final EditText eAmount = rootView.findViewById(R.id.amount);
+            final EditText eNote = rootView.findViewById(R.id.note);
+            final Spinner eSelectWallet = rootView.findViewById(R.id.select_wallet);
+            final Spinner eSelectDestWallet = rootView.findViewById(R.id.select_dest_wallet);
+            final Spinner eSelectCategory = rootView.findViewById(R.id.select_category);
+
+            FloatingActionButton fab = rootView.findViewById(R.id.fab_next);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String name = eName.getText().toString();
+                    int amount = Integer.parseInt(eAmount.getText().toString());
+                    String note = eNote.getText().toString();
+                    int sourceId = eSelectWallet.getSelectedItemPosition();
+                    int destinationId = eSelectDestWallet.getSelectedItemPosition();
+                    int categoryId = eSelectCategory.getSelectedItemPosition();
+                    long date = (new Date().getTime());
+
+                    DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+                    databaseHandler.addTransaction(new Transaction(getContext(), name, amount, note, date, categoryId, sourceId, destinationId));
+                    databaseHandler.close();
+                    Intent intent = new Intent(getContext(), ActivityWallet.class);
+                    startActivity(intent);
+                }
+            });
             return rootView;
+        }
+
+        public void addWallets(View view) {
+            Spinner spinner = view.findViewById(R.id.select_wallet);
+            Spinner spinner1 = view.findViewById(R.id.select_dest_wallet);
+            DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+            List<Wallet> wallets = databaseHandler.getAllWallets();
+            List<String> list = new ArrayList<>();
+            for (Wallet wallet: wallets) {
+                list.add(wallet.getName());
+            }
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(dataAdapter);
+            spinner1.setAdapter(dataAdapter);
+        }
+
+        public void addCategories(View view) {
+            Spinner spinner = view.findViewById(R.id.select_category);
+            DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
+            List<Category> categories = databaseHandler.getAllCategories();
+            List<String> list = new ArrayList<>();
+            for (Category category: categories) {
+                list.add(category.getName());
+            }
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(dataAdapter);
         }
     }
 
@@ -213,8 +331,9 @@ public class ActivityTransactionNew extends AppCompatActivity {
                     String note = eNote.getText().toString();
                     int sourceId = eSelectWallet.getSelectedItemPosition();
                     int categoryId = eSelectCategory.getSelectedItemPosition();
+                    long date = (new Date().getTime());
                     DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
-                    databaseHandler.addTransaction(new Transaction(getContext(), name, amount, note, 1, categoryId, sourceId, 0));
+                    databaseHandler.addTransaction(new Transaction(getContext(), name, amount, note, date, categoryId, sourceId, 0));
                     databaseHandler.close();
                     Intent intent = new Intent(getContext(), ActivityWallet.class);
                     startActivity(intent);

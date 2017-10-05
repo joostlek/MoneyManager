@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -52,11 +54,41 @@ public class ActivityMain extends AppCompatActivity {
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        DatabaseHandler databaseHandler = new DatabaseHandler(this);
-        List<Wallet> wallets = databaseHandler.getAllWallets();
-        if (wallets.size() == 0) {
-            databaseHandler.addWallet(new Wallet(0, "General", 0, "EUR", new ArrayList<Integer>()));
-            databaseHandler.addCategory(new Category(0, "Snackbar"));
-        }
+        LinearLayout qa_incoming = findViewById(R.id.ll_incoming);
+        qa_incoming.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ActivityMain.this, ActivityTransactionNew.class);
+                intent.putExtra("mode", 3);
+                startActivity(intent);
+            }
+        });
+
+        LinearLayout qa_transfer = findViewById(R.id.ll_transfer);
+        qa_transfer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ActivityMain.this, ActivityTransactionNew.class);
+                intent.putExtra("mode", 2);
+                startActivity(intent);
+            }
+        });
+
+        LinearLayout qa_outgoing = findViewById(R.id.ll_outgoing);
+        qa_outgoing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ActivityMain.this, ActivityTransactionNew.class);
+                intent.putExtra("mode", 1);
+                startActivity(intent);
+            }
+        });
+
+        LinearLayout qa_recurring = findViewById(R.id.ll_recurring);
+        qa_recurring.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
     }
 }

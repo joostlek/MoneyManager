@@ -2,7 +2,6 @@ package com.jtosti.moneymanager;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -102,7 +101,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if(cursor != null) {
             cursor.moveToFirst();
         }
-        Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
+        Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), cursor.getLong(4), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
         cursor.close();
         return transaction;
     }
@@ -138,7 +137,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(selectQuery, (String[])null);
         if(cursor.moveToFirst()) {
             do {
-                Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
+                Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), cursor.getLong(4), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
                 transactionList.add(transaction);
             } while(cursor.moveToNext());
         }
@@ -324,12 +323,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public List<Transaction> getTransactions(int walletId) {
         ArrayList transactionList = new ArrayList();
-        String selectQuery = String.format(Locale.ENGLISH, "SELECT  * FROM transactions WHERE sourceWalletId = %d OR destinationWalletId = %d", walletId, walletId);
+        String selectQuery = String.format(Locale.ENGLISH, "SELECT  * FROM transactions WHERE sourceWalletId = %d OR destinationWalletId = %d ORDER BY date DESC", walletId, walletId);
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, (String[])null);
         if(cursor.moveToFirst()) {
             do {
-                Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), Integer.parseInt(cursor.getString(4)), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
+                Transaction transaction = new Transaction(Integer.parseInt(cursor.getString(0)), cursor.getString(1), Double.parseDouble(cursor.getString(2)), cursor.getString(3), cursor.getLong(4), Integer.parseInt(cursor.getString(5)), Integer.parseInt(cursor.getString(6)), Integer.parseInt(cursor.getString(7)));
                 transactionList.add(transaction);
             } while(cursor.moveToNext());
         }

@@ -15,6 +15,7 @@
     <string name="title_activity_recurring_transaction_new">Add Recurring Transaction</string>
     <string name="title_activity_wallet_new">Add Wallet</string>
     <string name="total" formatted="false">Total: %s</string>
+    <string name="today">Today</string>
     <string-array name="currencies">
         <item>EUR</item>
         <item>USD</item>
@@ -30,5 +31,13 @@
     <string name="money_in">Incoming</string>
     <string name="money_out">Outgoing</string>
     <string name="money_trans">Transfer</string>
+
+    <string name="dashboard">Dashboard</string>
+    <string name="dashboard_quick_add">Quick Add</string>
+    <string name="dashboard_quick_in">Incoming Transaction</string>
+    <string name="dashboard_quick_out">Outgoing Transaction</string>
+    <string name="dashboard_quick_trans">Transfer Transaction</string>
+    <string name="dashboard_quick_recurring">Recurring Transaction</string>
+
 
 </resources>
